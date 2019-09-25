@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import matplotlib
 from matplotlib.patches import Rectangle, Arc, ConnectionPatch
 class Pitch:
 
