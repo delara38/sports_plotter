@@ -3,9 +3,24 @@ import matplotlib
 from matplotlib.patches import Arc
 class Pitch:
 
-    def __init__(self, x,y, col="white"):
-        self.X = x
-        self.Y = y
+    def __init__(self, x,y, col="white", custom_dim = None):
+        if custom_dim is not None:
+            self.X = custom_dim['x']
+            self.Y = custom_dim['y']
+            self.pen_width = custom_dim['pen_width']
+            self.pen_length = custom_dim['pen_length']
+            self.six_length = custom_dim['six_yard_length']
+            self.six_width = custom_dim['six_yard_width']
+            self.pen_dist = custom_dim['pen_spot_distance']
+        else:
+            self.X = (0,120)
+            self.Y = (80,0)
+            self.pen_width = 18
+            self.pen_length = 44
+            self.six_length = 20
+            self.six_width = 6
+            self.pen_dist = 12
+
         self.pitch_col = col
     def add_passes(self, passes, col = ''):
         self.passes = passes
@@ -18,62 +33,46 @@ class Pitch:
 
 
     def create_pitch(self, ax):
-        # size of the pitch is 120, 80
-        # Create figure
 
-        # Pitch Outline & Centre Line
-        plt.plot([self.X[0], self.X[0]], [self.Y[0], self.Y[1]], color="black")
-        plt.plot([self.X[0], self.X[1]], [self.Y[1], self.Y[1]], color="black")
-        plt.plot([self.X[1], self.X[1]], [self.Y[1], self.Y[0]], color="black")
-        plt.plot([self.X[1], self.X[0]], [self.Y[0], self.Y[0]], color="black")
-        plt.plot([(self.X[1] + self.X[0])/2, (self.X[1] + self.X[0])/2], [self.Y[0], self.Y[1]], color="black")
+        #create pitch borders and centerline
+        plt.plot((self.X[0],self.X[0]),(self.Y[0],self.Y[1]),c = 'black')
+        plt.plot((self.X[0],self.X[1]),(self.Y[0],self.Y[0]), c='black')
+        plt.plot((self.X[1],self.X[1]),(self.Y[0],self.Y[1]), c='black')
+        plt.plot((self.X[0],self.X[1]),(self.Y[1],self.Y[1]), c='black')
+        plt.plot(((self.X[1] + self.X[0])/2,(self.X[1] + self.X[0])/2),(self.Y[0],self.Y[1]), c='black')
 
-        # Left Penalty Area
-        plt.plot([self.X[0] + (self.X[1] - self.X[0]) * 0.12, self.X[0] + (self.X[1] - self.X[0]) * 0.12], [self.Y[0] + (self.Y[1] - self.Y[0]) * 0.72,self.Y[0] + (self.Y[1] - self.Y[0]) * 0.27  ], color="black")
-        plt.plot([self.X[0], self.X[0] + (self.X[1] - self.X[0]) * 0.12], [self.Y[0] + (self.Y[1] - self.Y[0]) * 0.72 , self.Y[0] + (self.Y[1] - self.Y[0]) * 0.72], color="black")
-        plt.plot([self.X[0], self.X[0] + (self.X[1] - self.X[0]) * 0.12], [self.Y[0] + (self.Y[1] - self.Y[0]) * 0.27, self.Y[0] + (self.Y[1] - self.Y[0]) * 0.27], color="black")
+        #add centre circle and dot
+        plt.scatter((self.X[1] + self.X[0])/2,(self.Y[1] + self.Y[0])/2, c='black', s = 15)
+        ax.add_artist(plt.Circle(((self.X[1] + self.X[0])/2,(self.Y[1] + self.Y[0])/2),(self.Y[1] - self.Y[0]) * 0.1,color='black', fill=False))
 
-        # Right Penalty Area
-        plt.plot([self.X[1], self.X[1] - (self.X[1] - self.X[0])* 0.12], [self.Y[0] + (self.Y[1] - self.Y[0]) * 0.72,self.Y[0] + (self.Y[1] - self.Y[0]) * 0.72], color="black")
-        plt.plot([self.X[1] - (self.X[1] - self.X[0])* 0.12, self.X[1] - (self.X[1] - self.X[0]) * 0.12], [self.Y[0] + (self.Y[1] - self.Y[0]) * 0.72, self.Y[0] + (self.Y[1] - self.Y[0]) * 0.27], color="black")
-        plt.plot([self.X[1], self.X[1] - (self.X[1] - self.X[0])* 0.12], [self.Y[0] + (self.Y[1] - self.Y[0]) * 0.27, self.Y[0] + (self.Y[1] - self.Y[0]) * 0.27], color="black")
+        #add penalty box
+        plt.plot((self.X[0],self.X[0] + self.pen_width),(self.Y[0] + ((self.Y[1] - self.Y[0]) - self.pen_length)/2 ,self.Y[0] + ((self.Y[1] - self.Y[0]) - self.pen_length)/2), c='black')
+        plt.plot((self.X[0],self.X[0] + self.pen_width),(self.Y[1] - ((self.Y[1] - self.Y[0]) - self.pen_length)/2,(self.Y[1] - ((self.Y[1] - self.Y[0]) - self.pen_length)/2)), c='black')
+        plt.plot((self.X[0] + self.pen_width, self.X[0] + self.pen_width),(self.Y[0] + ((self.Y[1] - self.Y[0]) - self.pen_length)/2,(self.Y[1] - ((self.Y[1] - self.Y[0]) - self.pen_length)/2)), c='black')
+        #left 6 yeard box
+        plt.plot((self.X[0],self.X[0] + self.six_width),(self.Y[0] + ((self.Y[1] - self.Y[0]) - self.six_length)/2,self.Y[0] + ((self.Y[1] - self.Y[0]) - self.six_length)/2), c='black')
+        plt.plot((self.X[0], self.X[0] + self.six_width),(self.Y[1] - ((self.Y[1] - self.Y[0]) - self.six_length)/2,self.Y[1] - ((self.Y[1] - self.Y[0]) - self.six_length)/2), c='black')
+        plt.plot((self.X[0] + self.six_width, self.X[0] + self.six_width),(self.Y[0] + ((self.Y[1] - self.Y[0]) - self.six_length)/2, self.Y[1] - ((self.Y[1] - self.Y[0]) - self.six_length)/2), c='black')
+        #left pen spot and arc
+        ax.add_patch(Arc((self.X[0] + self.pen_dist,(self.Y[1] + self.Y[0] )/2), width = (self.Y[1] - self.Y[0]) * 0.23, height=(self.Y[1] - self.Y[0]) * 0.23, theta1=310, theta2=50, angle=180))
+        plt.scatter(self.X[0] + self.pen_dist,(self.Y[1] + self.Y[0])/2, c='black', s =  15)
 
-        # Left 6-yard Box
-        plt.plot([self.X[0], self.X[0] + (self.X[1] - self.X[0]) * 0.04], [self.Y[0] + (self.Y[1] - self.Y[0]) * .6, self.Y[0] + (self.Y[1] - self.Y[0]) * .6], color="black")
-        plt.plot([self.X[0] + (self.X[1] - self.X[0]) * 0.04, self.X[0] + (self.X[1] - self.X[0]) * 0.04], [self.Y[0] + (self.Y[1] - self.Y[0]) * .6, self.Y[0] + (self.Y[1] - self.Y[0]) * .4], color="black")
-        plt.plot([self.X[0], self.X[0] + (self.X[1] - self.X[0]) * 0.04], [self.Y[0] + (self.Y[1] - self.Y[0]) * .4, self.Y[0] + (self.Y[1] - self.Y[0]) * .4], color="black")
-
-        # Right 6-yard Box
-        plt.plot([self.X[1], self.X[0] + (self.X[1] - self.X[0]) * 0.96], [self.Y[0] + (self.Y[1] - self.Y[0]) * .6, self.Y[0] + (self.Y[1] - self.Y[0]) * .6], color="black")
-        plt.plot([self.X[0] + (self.X[1] - self.X[0]) * 0.96, self.X[0] + (self.X[1] - self.X[0]) * 0.96], [self.Y[0] + (self.Y[1] - self.Y[0]) * .6, self.Y[0] + (self.Y[1] - self.Y[0]) * .4], color="black")
-        plt.plot([self.X[1], self.X[0] + (self.X[1] - self.X[0]) * 0.96], [self.Y[0] + (self.Y[1] - self.Y[0]) * .4, self.Y[0] + (self.Y[1] - self.Y[0]) * .4], color="black")
-
-        # Prepare Circles
-        centreCircle = plt.Circle(((self.X[0] + self.X[1]) / 2, (self.Y[0] + self.Y[1]) / 2), (self.Y[1] - self.Y[0]) * .101, color="black", fill=False)
-        centreSpot = plt.Circle(((self.X[0] + self.X[1]) / 2, (self.Y[0] + self.Y[1]) / 2), (self.Y[1] - self.Y[0]) * 0.0089, color="black")
-        leftPenSpot = plt.Circle((self.X[0] + (self.X[1] - self.X[0]) * 0.0808, (self.Y[0] + self.Y[1]) / 2),  (self.Y[1] - self.Y[0]) * 0.0089, color="black")
-        rightPenSpot = plt.Circle((self.X[1] - (self.X[1] - self.X[0]) * 0.0808, (self.Y[0] + self.Y[1]) / 2),  (self.Y[1] - self.Y[0]) * 0.0089, color="black")
-
-        # Draw Circles
-        ax.add_patch(centreCircle)
-        ax.add_patch(centreSpot)
-        ax.add_patch(leftPenSpot)
-        ax.add_patch(rightPenSpot)
-
-        # Prepare Arcs
-        # arguments for arc
-        # x, y coordinate of centerpoint of arc
-        # width, height as arc might not be circle, but oval
-        # angle: degree of rotation of the shape, anti-clockwise
-        # theta1, theta2, start and end location of arc in degree
-        leftArc = Arc((self.X[0] + (self.X[1] - self.X[0]) * 0.0808, (self.Y[0] + self.Y[1]) / 2), height=(self.X[1] - self.X[0]) * 0.135, width=(self.X[1] - self.X[0]) * 0.135, angle=0, theta1=310, theta2=50, color="black")
-        rightArc = Arc((self.X[1] - (self.X[1] - self.X[0]) * 0.0808, (self.Y[0] + self.Y[1]) / 2), height=(self.X[1] - self.X[0]) * 0.135, width=(self.X[1] - self.X[0]) * 0.135, angle=0, theta1=130, theta2=230, color="black")
-
-        # Draw Arcs
-        ax.add_patch(leftArc)
-        ax.add_patch(rightArc)
+        #add penalty box
+        plt.plot((self.X[1],self.X[1] -  self.pen_width),(self.Y[0] + ((self.Y[1] - self.Y[0]) - self.pen_length)/2 ,self.Y[0] + ((self.Y[1] - self.Y[0]) - self.pen_length)/2), c='black')
+        plt.plot((self.X[1],self.X[1] - self.pen_width),(self.Y[1] - ((self.Y[1] - self.Y[0]) - self.pen_length)/2,(self.Y[1] - ((self.Y[1] - self.Y[0]) - self.pen_length)/2)), c='black')
+        plt.plot((self.X[1] - self.pen_width, self.X[1] - self.pen_width),(self.Y[0] + ((self.Y[1] - self.Y[0]) - self.pen_length)/2,(self.Y[1] - ((self.Y[1] - self.Y[0]) - self.pen_length)/2)), c='black')
+        #left 6 yeard box
+        plt.plot((self.X[1],self.X[1] - self.six_width),(self.Y[0] + ((self.Y[1] - self.Y[0]) - self.six_length)/2,self.Y[0] + ((self.Y[1] - self.Y[0]) - self.six_length)/2), c='black')
+        plt.plot((self.X[1], self.X[1] - self.six_width),(self.Y[1] - ((self.Y[1] - self.Y[0]) - self.six_length)/2,self.Y[1] - ((self.Y[1] - self.Y[0]) - self.six_length)/2), c='black')
+        plt.plot((self.X[1] - self.six_width, self.X[1] - self.six_width),(self.Y[0] + ((self.Y[1] - self.Y[0]) - self.six_length)/2, self.Y[1] - ((self.Y[1] - self.Y[0]) - self.six_length)/2), c='black')
+        #left pen spot and arc
+        ax.add_patch(Arc((self.X[1] - self.pen_dist,(self.Y[1] + self.Y[0])/2), width = (self.Y[1] - self.Y[0]) * 0.23, height=(self.Y[1] - self.Y[0]) * 0.23, theta1=310, theta2=50, angle=0))
+        plt.scatter(self.X[1] - self.pen_dist,(self.Y[1] + self.Y[0])/2, c='black', s =  15)
 
 
+
+        plt.ylim(self.Y[0],self.Y[1])
+        plt.xlim(self.X[0] - 0.1,self.X[1])
 
     def show_pitch(self, ax):
         self.create_pitch(ax)
@@ -110,9 +109,8 @@ class Pitch:
 
         ax.set_facecolor(self.pitch_col)
 
-fig = plt.Figure()
-ax = fig.add_subplot(1,1,1)
-pc = Pitch((0,120),(0,80))
+fig, ax = plt.subplots()
+pc = Pitch((0,120),(0,80), col='green')
 pc.show_pitch(ax)
 plt.show()
 
