@@ -203,9 +203,3 @@ class Pitch:
 
 
 
-fig, ax = plt.subplots()
-pc = Pitch((-120,120),(0,80), col='green', vert=True)
-pc.add_passes([[3,4,20,50]])
-pc.show_pitch(ax)
-plt.show()
-

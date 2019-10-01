@@ -1,8 +1,6 @@
-from soccer import Pitch
-from hockey import Rink
+from sport_plotter.soccer import Pitch
 import matplotlib.pyplot as plt
-import seaborn as sns
-import numpy as np
+
 '''
 #Create a plot of a full hockey rink with two red hexagons at (50,0) and (-50,10) representing shots
 fig = plt.figure()

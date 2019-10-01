@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle, Rectangle, Arc
-import numpy as np
+
 class Rink:
 
     def __init__(self, x = [-100,100], y = [-42.5,42.5], half=False, vert=False):
