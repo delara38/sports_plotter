@@ -201,5 +201,13 @@ class Pitch:
 
         ax.set_facecolor(self.pitch_col)
 
+    def dim_(self):
+        return self.X, self.Y
+
+    def shots_(self):
+        return self.shots
+
+    def passes_(self):
+        return self.passes
 
 
