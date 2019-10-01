@@ -1,6 +1,6 @@
 from setuptools import setup
 
-setup(name='sportsplotter',
+setup(name='sports_plotter',
       version='0.1',
       description='package making it easier to plot on soccer pitches and hockey rinks',
       url='https://github.com/delara38/sports_plotter',

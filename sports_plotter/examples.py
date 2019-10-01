@@ -1,8 +1,8 @@
-from sport_plotter.soccer import Pitch
+from sports_plotter.soccer import Pitch
 import matplotlib.pyplot as plt
 import numpy as np
 import seaborn as sns
-from sport_plotter.hockey import Rink
+from sports_plotter.hockey import Rink
 import pandas as pd
 
 
@@ -36,5 +36,5 @@ plt.show()
 fig = plt.Figure()
 ax = fig.add_subplot(1,1,1)
 rnk = Rink(half=True)
-shots = pd.read_csv('sport_plotter/shots_2018.csv')
+shots = pd.read_csv('sports_plotter/shots_2018.csv')
 sns.kdeplot(shots[''])
