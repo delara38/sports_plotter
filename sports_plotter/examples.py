@@ -10,8 +10,8 @@ import pandas as pd
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1)
 rnk = Rink()
-rnk.add_shots([[50,0],[-50,10]], shape='H', color='red')
 rnk.plot_rink(ax)
+rnk.add_shots([[50,0],[-50,10]], shape='H', color='red')
 plt.show()
 
 #Create a plot of a soccer pitch and plot a couple passes and makes them blue
@@ -31,3 +31,4 @@ mean, cov = [60, 40], [(80, 0), (0, 80)]
 x, y = np.random.multivariate_normal(mean, cov, size=50).T
 sns.kdeplot(x,y, zorder=1000, shade_lowest=False)
 plt.show()
+

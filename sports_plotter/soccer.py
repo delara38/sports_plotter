@@ -27,8 +27,8 @@ class Pitch:
     def add_passes(self, passes, col = ''):
         self.passes = passes
         self.pass_col = col
-    def add_shots(self, shots, col= '', size = -1):
-        self.shots = shots
+    def add_shots(self, xy, col= '', size = -1):
+        self.shots = xy
         self.shots_col = col
         self.shots_size = size
 
