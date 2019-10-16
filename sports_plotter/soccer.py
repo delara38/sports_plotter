@@ -1,213 +1,368 @@
-import matplotlib.pyplot as plt
-import matplotlib
-from matplotlib.patches import Arc
-class Pitch:
+import matplotlib.patches as patches
+import matplotlib.transforms as transforms
 
-    def __init__(self, x,y, col="white", custom_dim = None, vert= False, half=False):
-        self.vert= vert
-        self.half = half
-        if custom_dim is not None:
-            self.X = custom_dim['x']
-            self.Y = custom_dim['y']
-            self.pen_width = custom_dim['pen_width']
-            self.pen_length = custom_dim['pen_length']
-            self.six_length = custom_dim['six_yard_length']
-            self.six_width = custom_dim['six_yard_width']
-            self.pen_dist = custom_dim['pen_spot_distance']
-        else:
-            self.X = (0,120)
-            self.Y = (80,0)
-            self.pen_width = 18
-            self.pen_length = 44
-            self.six_length = 20
-            self.six_width = 6
-            self.pen_dist = 12
+_default_dims = {
+    'pen_length': 18, 'pen_width': 44,
+    'six_length': 6, 'six_width': 20,
+    'pk_length': 12, 'circle_rad': 10
+}
 
-        self.pitch_col = col
-    def add_passes(self, passes, col = ''):
-        self.passes = passes
-        self.pass_col = col
-    def add_shots(self, xy, col= '', size = -1):
-        self.shots = xy
-        self.shots_col = col
-        self.shots_size = size
+_pitch_cosmetics = {
+    'linewidth': 1,
+    'facecolor': (1, 1, 1, 1),
+    'edgecolor': (0, 0, 0, 1)
+}
 
+_pass_cosmetics = {
+    'length_includes_head': True,
+    'head_width': 2,
+    'head_length': 2,
+    'width': 0.5,
+    'facecolor': (0, 0, 1, 0.6),
+    'edgecolor': (0, 0, 0, 0)
+}
 
+_point_cosmetics = {
+    'linewidth': 1,
+    'facecolor': (0, 0, 1, 0.6),
+    'edgecolor': (0, 0, 0, 0),
+    'radius': 1
+}
 
-    def create_pitch(self, ax):
+class Pitch(object):
+    """
+    This is a class for drawing a soccer pitch.
 
-        #create pitch borders and centerline
-        plt.plot((self.X[0],self.X[0]),(self.Y[0],self.Y[1]),c = 'black')
-        plt.plot((self.X[0],self.X[1]),(self.Y[0],self.Y[0]), c='black')
-        plt.plot((self.X[1],self.X[1]),(self.Y[0],self.Y[1]), c='black')
-        plt.plot((self.X[0],self.X[1]),(self.Y[1],self.Y[1]), c='black')
-        plt.plot(((self.X[1] + self.X[0])/2,(self.X[1] + self.X[0])/2),(self.Y[0],self.Y[1]), c='black')
+    Parameters
+    ----------
+    length : Length of field in yards. Default to 120.
+    width : Width of field in yards. Default to 80.
+    dimensions : Dimensions of interior lines in yards
+            default = {'pen_length': 18, 'pen_width': 44,
+                       'six_length': 6, 'six_width': 20,
+                       'pk_length': 12, 'circle_rad': 10}
+    vert : Plot field vertically. Default is False.
+    scale : scaling factors for provider data.
+            Opta is default at (100,100)
+            For StatsBomb, use (120,80)
+    padding : Padding for plot. Defaults to 5.
 
-        #add centre circle and dot
-        plt.scatter((self.X[1] + self.X[0])/2,(self.Y[1] + self.Y[0])/2, c='black', s = 15)
-        ax.add_artist(plt.Circle(((self.X[1] + self.X[0])/2,(self.Y[1] + self.Y[0])/2),(self.Y[1] - self.Y[0]) * 0.1,color='black', fill=False))
+    Examples
+    --------
+    Basic Usage
 
-        #add penalty box
-        plt.plot((self.X[0],self.X[0] + self.pen_width),(self.Y[0] + ((self.Y[1] - self.Y[0]) - self.pen_length)/2 ,self.Y[0] + ((self.Y[1] - self.Y[0]) - self.pen_length)/2), c='black')
-        plt.plot((self.X[0],self.X[0] + self.pen_width),(self.Y[1] - ((self.Y[1] - self.Y[0]) - self.pen_length)/2,(self.Y[1] - ((self.Y[1] - self.Y[0]) - self.pen_length)/2)), c='black')
-        plt.plot((self.X[0] + self.pen_width, self.X[0] + self.pen_width),(self.Y[0] + ((self.Y[1] - self.Y[0]) - self.pen_length)/2,(self.Y[1] - ((self.Y[1] - self.Y[0]) - self.pen_length)/2)), c='black')
-        #left 6 yeard box
-        plt.plot((self.X[0],self.X[0] + self.six_width),(self.Y[0] + ((self.Y[1] - self.Y[0]) - self.six_length)/2,self.Y[0] + ((self.Y[1] - self.Y[0]) - self.six_length)/2), c='black')
-        plt.plot((self.X[0], self.X[0] + self.six_width),(self.Y[1] - ((self.Y[1] - self.Y[0]) - self.six_length)/2,self.Y[1] - ((self.Y[1] - self.Y[0]) - self.six_length)/2), c='black')
-        plt.plot((self.X[0] + self.six_width, self.X[0] + self.six_width),(self.Y[0] + ((self.Y[1] - self.Y[0]) - self.six_length)/2, self.Y[1] - ((self.Y[1] - self.Y[0]) - self.six_length)/2), c='black')
-        #left pen spot and arc
-        ax.add_patch(Arc((self.X[0] + self.pen_dist,(self.Y[1] + self.Y[0] )/2), width = (self.Y[1] - self.Y[0]) * 0.23, height=(self.Y[1] - self.Y[0]) * 0.23, theta1=310, theta2=50, angle=180))
-        plt.scatter(self.X[0] + self.pen_dist,(self.Y[1] + self.Y[0])/2, c='black', s =  15)
+    >>> from sports_plotter.soccer import Pitch
+    >>> import matplotlib.pyplot as plot
 
-        #add penalty box
-        plt.plot((self.X[1],self.X[1] -  self.pen_width),(self.Y[0] + ((self.Y[1] - self.Y[0]) - self.pen_length)/2 ,self.Y[0] + ((self.Y[1] - self.Y[0]) - self.pen_length)/2), c='black')
-        plt.plot((self.X[1],self.X[1] - self.pen_width),(self.Y[1] - ((self.Y[1] - self.Y[0]) - self.pen_length)/2,(self.Y[1] - ((self.Y[1] - self.Y[0]) - self.pen_length)/2)), c='black')
-        plt.plot((self.X[1] - self.pen_width, self.X[1] - self.pen_width),(self.Y[0] + ((self.Y[1] - self.Y[0]) - self.pen_length)/2,(self.Y[1] - ((self.Y[1] - self.Y[0]) - self.pen_length)/2)), c='black')
-        #left 6 yeard box
-        plt.plot((self.X[1],self.X[1] - self.six_width),(self.Y[0] + ((self.Y[1] - self.Y[0]) - self.six_length)/2,self.Y[0] + ((self.Y[1] - self.Y[0]) - self.six_length)/2), c='black')
-        plt.plot((self.X[1], self.X[1] - self.six_width),(self.Y[1] - ((self.Y[1] - self.Y[0]) - self.six_length)/2,self.Y[1] - ((self.Y[1] - self.Y[0]) - self.six_length)/2), c='black')
-        plt.plot((self.X[1] - self.six_width, self.X[1] - self.six_width),(self.Y[0] + ((self.Y[1] - self.Y[0]) - self.six_length)/2, self.Y[1] - ((self.Y[1] - self.Y[0]) - self.six_length)/2), c='black')
-        #left pen spot and arc
-        ax.add_patch(Arc((self.X[1] - self.pen_dist,(self.Y[1] + self.Y[0])/2), width = (self.Y[1] - self.Y[0]) * 0.23, height=(self.Y[1] - self.Y[0]) * 0.23, theta1=310, theta2=50, angle=0))
-        plt.scatter(self.X[1] - self.pen_dist,(self.Y[1] + self.Y[0])/2, c='black', s =  15)
+    >>> fig, ax = plt.subplots()
 
+    >>> pitch = Pitch()
+    >>> pitch.create_pitch(ax)
 
+    >>> plt.ylim(pitch.ylim)
+    >>> plt.xlim(pitch.xlim)
+    >>> plt.show()
 
-        plt.ylim(self.Y[0],self.Y[1])
-        plt.xlim(self.X[0] - 0.1,self.X[1])
+    """
 
-    def create_pitch_vert(self, ax):
-        # create pitch borders and centerline
-        plt.plot((self.Y[0],self.Y[0]), (self.X[0],self.X[1]), c='black')
-        plt.plot((self.Y[0],self.Y[1]), (self.X[0], self.X[0]), c='black')
-        plt.plot((self.Y[0],self.Y[1]), (self.X[1], self.X[1]), c='black')
-        plt.plot((self.Y[1],self.Y[1]), (self.X[0], self.X[1]), c='black')
-        plt.plot((self.Y[0] , self.Y[1]), ((self.X[0] + self.X[1]) / 2, (self.X[0] + self.X[1])/2), c='black')
+    def __init__(self,
+                 length=120,
+                 width=80,
+                 dimensions=_default_dims,
+                 vert=False, scale=(100, 100),
+                 padding=5):
 
-        #create top pen box
-        plt.plot((self.Y[0] + ((self.Y[1] - self.Y[0]) - self.pen_length )/2, self.Y[0] + ((self.Y[1] - self.Y[0]) - self.pen_length )/2),(self.X[1], self.X[1] - self.pen_width), c='black')
-        plt.plot((self.Y[1] - ((self.Y[1] - self.Y[0]) - self.pen_length) /2, self.Y[1] - ((self.Y[1] - self.Y[0]) - self.pen_length) / 2), (self.X[1], self.X[1] - self.pen_width), c='black')
-        plt.plot((self.Y[0] + ((self.Y[1] - self.Y[0]) - self.pen_length) /2, self.Y[1] - ((self.Y[1] - self.Y[0]) - self.pen_length) / 2), (self.X[1] - self.pen_width, self.X[1] - self.pen_width), c ='black')
-        #Create top 6 yard box
-        plt.plot((self.Y[0] + ((self.Y[1] - self.Y[0]) - self.six_length )/2, self.Y[0] + ((self.Y[1] - self.Y[0]) - self.six_length )/2),(self.X[1], self.X[1] - self.six_width), c='black')
-        plt.plot((self.Y[1] - ((self.Y[1] - self.Y[0]) - self.six_length) /2, self.Y[1] - ((self.Y[1] - self.Y[0]) - self.six_length) / 2), (self.X[1], self.X[1] - self.six_width), c='black')
-        plt.plot((self.Y[0] + ((self.Y[1] - self.Y[0]) - self.six_length) /2, self.Y[1] - ((self.Y[1] - self.Y[0]) - self.six_length) / 2), (self.X[1] - self.six_width, self.X[1] - self.six_width), c ='black')
-        #Add pen spot and ard
-        plt.scatter(((self.Y[1] + self.Y[0])/2),((self.X[1] - self.pen_dist)), c='black', s = 8)
-        ax.add_artist(Arc(((self.Y[1] + self.Y[0])/2,(self.X[1] - self.pen_dist)),  height = (self.Y[1] - self.Y[0]) * 0.23, width=(self.Y[1] - self.Y[0]) * 0.23, theta1=310, theta2=50, angle=90 ))
+        self.vert = vert
+        self.length = length
+        self.width = width
+        self.x_scale = scale[0]
+        self.y_scale = scale[1]
 
-        # create top pen box
-        plt.plot((self.Y[0] + ((self.Y[1] - self.Y[0]) - self.pen_length) / 2, self.Y[0] + ((self.Y[1] - self.Y[0]) - self.pen_length) / 2), (self.X[0], self.X[0] + self.pen_width), c='black')
-        plt.plot((self.Y[1] - ((self.Y[1] - self.Y[0]) - self.pen_length) / 2, self.Y[1] - ((self.Y[1] - self.Y[0]) - self.pen_length) / 2), (self.X[0], self.X[0] + self.pen_width), c='black')
-        plt.plot((self.Y[0] + ((self.Y[1] - self.Y[0]) - self.pen_length) / 2, self.Y[1] - ((self.Y[1] - self.Y[0]) - self.pen_length) / 2),(self.X[0] + self.pen_width, self.X[0] + self.pen_width), c='black')
-        # Create 6 yard box
-        plt.plot((self.Y[0] + ((self.Y[1] - self.Y[0]) - self.six_length) / 2, self.Y[0] + ((self.Y[1] - self.Y[0]) - self.six_length) / 2), (self.X[0], self.X[0] + self.six_width), c='black')
-        plt.plot((self.Y[1] - ((self.Y[1] - self.Y[0]) - self.six_length) / 2, self.Y[1] - ((self.Y[1] - self.Y[0]) - self.six_length) / 2), (self.X[0], self.X[0] + self.six_width), c='black')
-        plt.plot((self.Y[0] + ((self.Y[1] - self.Y[0]) - self.six_length) / 2, self.Y[1] - ((self.Y[1] - self.Y[0]) - self.six_length) / 2), (self.X[0] + self.six_width, self.X[0] + self.six_width), c='black')
-        #Add pen spot and arc
-        plt.scatter(((self.Y[1] + self.Y[0])/2),((self.X[0] + self.pen_dist)), c='black', s = 8)
-        ax.add_artist(Arc(((self.Y[1] + self.Y[0])/2,(self.X[0] + self.pen_dist)),  height = (self.Y[1] - self.Y[0]) * 0.23, width=(self.Y[1] - self.Y[0]) * 0.23, theta1=310, theta2=50, angle=270 ))
-
-
-        #Add middle dot and circle
-        plt.scatter(((self.Y[1] + self.Y[0] )/ 2), ((self.X[1] + self.X[0])/2), c='black', s=8)
-        ax.add_artist(plt.Circle(((self.Y[1] + self.Y[0] )/ 2, (self.X[1] + self.X[0])/2), radius=(self.X[1] - self.X[0])*.1, color='black', fill=False))
-
-
-        plt.xlim(self.Y[0],self.Y[1])
-        plt.ylim(self.X[0] - 0.1,self.X[1])
-    def show_pitch(self, ax):
         if self.vert:
-            if self.half:
-                self.create_pitch_vert(ax)
-                plt.xlim((self.X[0] + self.X[1]) / 2 - 0.2, self.X[1])
-            else:
-                self.create_pitch_vert(ax)
-
+            self.xlim = (-padding, self.width + padding)
+            self.ylim = (-padding, self.length + padding)
         else:
-            if self.half:
-                self.create_pitch(ax)
-                plt.xlim((self.X[0] + self.X[1]) / 2 -0.2, self.X[1])
-            else:
-                self.create_pitch(ax)
+            self.xlim = (-padding, self.length + padding)
+            self.ylim = (-padding, self.width + padding)
+
+        for k, v in dimensions.items():
+            assert k in _default_dims.keys(), '{} not an attribute'.format(k)
+            setattr(self, k, v)
+
+    def __repr__(self):
+        """
+        Return string representation of Pitch object
+        """
+        return 'Pitch({}x{})'.format(self.length, self.width)
+
+    def _pitch_components(self, cosmetics):
+
+        rect, circ = patches.Rectangle, patches.Circle
+
+        comps = {
+            'border': (rect,
+                       {'xy': (0, 0),
+                        'width': self.length,
+                        'height': self.width}),
+
+            'left_circle': (circ,
+                            {'xy': (self.pk_length,
+                                    self.width/2),
+                             'radius': self.circle_rad}),
+
+            'right_circle': (circ,
+                             {'xy': (self.length-self.pk_length,
+                                     self.width/2),
+                              'radius': self.circle_rad}),
+
+            'left_penalty': (rect,
+                             {'xy': (0, (self.width/2)-(self.pen_width/2)),
+                              'width': self.pen_length,
+                              'height': self.pen_width}),
+
+            'right_penalty': (rect,
+                              {'xy': (self.length,
+                                      (self.width/2)-(self.pen_width/2)),
+                               'width': -self.pen_length,
+                               'height': self.pen_width}),
+
+            'left_pk_dot': (circ,
+                            {'xy': (self.pk_length,
+                                    self.width/2),
+                             'radius': 0.5}),
+
+            'right_pk_dot': (circ,
+                             {'xy': (self.length-self.pk_length,
+                                     self.width/2),
+                              'radius': 0.5}),
+
+            'left_six': (rect,
+                         {'xy': (0, (self.width/2)-(self.six_width/2)),
+                          'width': self.six_length,
+                          'height': self.six_width}),
+
+            'right_six': (rect,
+                          {'xy': (self.length,
+                                  (self.width/2)-(self.six_width/2)),
+                           'width': -self.six_length,
+                           'height': self.six_width}),
+
+            'half_circle': (circ,
+                            {'xy': (self.length/2,
+                                    self.width/2),
+                             'radius': self.circle_rad}),
+
+            'half_line': (rect,
+                          {'xy': (self.length/2, 0),
+                           'width': 0,
+                           'height': self.width}),
+
+            'half_dot': (circ,
+                         {'xy': (self.length/2,
+                                 self.width/2),
+                          'radius': 0.5}),
+        }
+
+        if self.vert:
+            for k, (shape, attrs) in comps.items():
+                attrs['xy'] = (attrs['xy'][1], attrs['xy'][0])
+                if shape == rect:
+                    new_width = attrs['height']
+                    attrs['height'] = attrs['width']
+                    attrs['width'] = new_width
+
+        return [s(**attrs, **cosmetics) for k, (s, attrs) in comps.items()]
+
+    def x_adj(self, x):
+        """
+        X Coordinate Adjuster for Spatial Data
+
+        Parameters
+        ----------
+        x: spatial x coordinate from data provider
 
 
-        if self.half:
-            try:
-                if self.shots_size == -1:
-                    if self.shots_col == '':
-                        for i in range(len(self.shots)):
-                            plt.scatter(self.shots[i][1], self.shots[i][0], alpha=1, c='blue')
-                    else:
-                        for i in range(len(self.shots)):
-                            plt.scatter(self.shots[i][1], self.shots[i][0], c=self.shots_col, alpha=1)
-                else:
-                    if self.shots_col == '':
-                        for i in range(len(self.shots)):
-                            plt.scatter(self.shots[i][1], self.shots[i][0], s=self.shots_size[i], alpha=1, c='blue')
-                    else:
-                        for i in range(len(self.shots)):
-                            plt.scatter(self.shots[i][1], self.shots[i][0], c=self.shots_col, s=self.shots_size[i], alpha=1)
-            except:
-                pass
+        Returns
+        -------
 
-            try:
+        Float
+            An adjusted x coordinate for field scale
 
-                if self.pass_col == '':
-                   for i in range(len(self.passes)):
-                        plt.arrow(self.passes[i][1], self.passes[i][0], self.passes[i][3] - self.passes[i][1],
-                              self.passes[i][2] - self.passes[i][0], length_includes_head=True, head_width=3)
-                else:
-                    for i in range(len(self.passes)):
-                        plt.arrow(self.passes[i][1], self.passes[i][0], self.passes[i][3] - self.passes[i][1],
-                          self.passes[i][2] - self.passes[i][0], color=self.pass_col, length_includes_head=True,
-                          head_width=3)
+        Examples
+        --------
 
-            except:
-                pass
+        >>> from sports_plotter.soccer import Pitch
+        >>> pitch = Pitch(length=120, width=80)
 
-        else:
+        >>> opta_x, opta_y = 50, 50
+        >>> pitch.x_adj(50)
+        60
 
-            try:
-                if self.shots_size == -1:
-                    if self.shots_col == '':
-                        for i in range(len(self.shots)):
-                            plt.scatter(self.shots[i][0], self.shots[i][1], alpha = 1, c='blue')
-                    else:
-                        for i in range(len(self.shots)):
-                            plt.scatter(self.shots[i][0], self.shots[i][1], c= self.shots_col, alpha=1)
-                else:
-                    if self.shots_col == '':
-                        for i in range(len(self.shots)):
-                            plt.scatter(self.shots[i][0], self.shots[i][1], s = self.shots_size[i], alpha = 1, c='blue')
-                    else:
-                        for i in range(len(self.shots)):
-                            plt.scatter(self.shots[i][0], self.shots[i][1], c= self.shots_col, s = self.shots_size[i], alpha = 1)
-            except:
-                pass
-            try:
+        """
+        return x * (self.length / self.x_scale)
 
-                if self.pass_col == '':
-                    for i in range(len(self.passes)):
-                        plt.arrow(self.passes[i][0], self.passes[i][1], self.passes[i][2] - self.passes[i][0],
-                                  self.passes[i][3]- self.passes[i][1], length_includes_head=True, head_width=3)
-                else:
-                    for i in range(len(self.passes)):
-                        plt.arrow(self.passes[i][0], self.passes[i][1], self.passes[i][2] - self.passes[i][0],
-                                  self.passes[i][3] - self.passes[i][1], color = self.pass_col, length_includes_head=True, head_width=3)
+    def y_adj(self, y):
+        """
+        Y Coordinate Adjuster for Spatial Data
 
-            except:
-                pass
-
-        ax.set_facecolor(self.pitch_col)
-
-    def dim_(self):
-        return self.X, self.Y
-
-    def shots_(self):
-        return self.shots
-
-    def passes_(self):
-        return self.passes
+        Parameters
+        ----------
+        y: spatial y coordinate from data provider
 
 
+        Returns
+        -------
+
+        Float
+            An adjusted y coordinate for field scale
+
+        Examples
+        --------
+
+        >>> from sports_plotter.soccer import Pitch
+        >>> pitch = Pitch(length=120, width=80)
+
+        >>> opta_x, opta_y = 50, 50
+        >>> pitch.y_adj(50)
+        40
+
+        """
+        return y * (self.width / self.y_scale)
+
+    def draw_passes(self, ax, passes, cosmetics=_pass_cosmetics):
+        """
+        Add Passes to Particular Axes
+
+        Parameters
+        ---------
+        ax: matplotlib Axes object
+
+        passes: list of pass coordinates
+            eg. - >>> [(x, y, end_x, end_y)]
+
+        cosmetics: dict of keyword arguments for patches.FancyArrow()
+            default = {'length_includes_head': True,
+                       'head_width': 2,
+                       'head_length': 2,
+                       'width': 0.5,
+                       'facecolor': (0, 0, 1, 0.6),
+                       'edgecolor': (0, 0, 0, 0)}
+
+        Examples
+        -------
+
+        >>> from sports_plotter.soccer import Pitch
+        >>> import matplotlib.pyplot as plot
+
+        >>> fig, ax = plt.subplots()
+
+        >>> pitch = Pitch()
+        >>> pitch.create_pitch(ax)
+
+
+        >>> passes = [(60,60,25,25), (20,20, 50,50)]
+        >>> pitch.draw_passes(ax, passes)
+
+        >>> plt.ylim(pitch.ylim)
+        >>> plt.xlim(pitch.xlim)
+        >>> plt.show()
+
+        """
+
+        # TODO Accept Different Pass Vector Formats
+        for x, y, end_x, end_y in passes:
+
+            y = (100-y) if self.vert else y
+            end_y = (100-end_y) if self.vert else end_y
+
+            dx = end_x - x
+            dy = end_y - y
+
+            attributes = {
+                'x': self.y_adj(y) if self.vert else self.x_adj(x),
+                'y': self.x_adj(x) if self.vert else self.y_adj(y),
+                'dx': self.y_adj(dy) if self.vert else self.x_adj(dx),
+                'dy': self.x_adj(dx) if self.vert else self.y_adj(dy)
+            }
+
+            ax.add_patch(patches.FancyArrow(**attributes, **cosmetics))
+
+    def draw_points(self, ax, shots, cosmetics=_point_cosmetics):
+        """
+        Add Points to Particular Axes
+
+        Parameters
+        ---------
+        ax: matplotlib Axes object
+
+        passes: list of point coordinates
+            eg. - >>> [(x, y)]
+
+        cosmetics: dict of keyword arguments for patches.Circle()
+            default = {'linewidth': 1,
+                       'facecolor': (0, 0, 1, 0.6),
+                       'edgecolor': (0, 0, 0, 0),
+                       'radius': 1}
+
+        Examples
+        -------
+
+        >>> from sports_plotter.soccer import Pitch
+        >>> import matplotlib.pyplot as plot
+
+        >>> fig, ax = plt.subplots()
+
+        >>> pitch = Pitch()
+        >>> pitch.create_pitch(ax)
+
+
+        >>> shots = [(90,50), (85,60)]
+        >>> pitch.draw_points(ax, passes)
+
+        >>> plt.ylim(pitch.ylim)
+        >>> plt.xlim(pitch.xlim)
+        >>> plt.show()
+
+        """
+        for x, y in shots:
+
+            y = (100-y) if self.vert else y
+
+            attributes = {
+                'xy': (self.y_adj(y) if self.vert else self.x_adj(x),
+                       self.x_adj(x) if self.vert else self.y_adj(y))
+            }
+
+            ax.add_patch(patches.Circle(**attributes, **point_cosmetics))
+
+    def create_pitch(self, ax, cosmetics=_pitch_cosmetics):
+        """
+        Draw Pitch on Axes
+
+        Parameters
+        ---------
+        ax: matplotlib Axes object
+
+        cosmetics: dict of keyword arguments for pitch component patches.
+            default = {'linewidth': 1,
+                       'facecolor': (1, 1, 1, 1),
+            'edgecolor': (0, 0, 0, 1)}
+
+        Examples
+        -------
+
+        >>> from sports_plotter.soccer import Pitch
+        >>> import matplotlib.pyplot as plot
+
+        >>> fig, ax = plt.subplots()
+
+        >>> pitch = Pitch()
+        >>> pitch.create_pitch(ax)
+
+        >>> plt.ylim(pitch.ylim)
+        >>> plt.xlim(pitch.xlim)
+        >>> plt.show()
+
+        """
+        for patch in self._pitch_components(cosmetics):
+            ax.add_patch(patch)
