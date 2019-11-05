@@ -92,7 +92,6 @@ plot a passing network over a soccer pitch
 ```
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1)
-#create the pitch object and say it will come with a grid that is 20x20
 pitch = Pitch()
 #create array of pass co-ordinates for pass network in format [x1, y1, x2,y2]
 #where 1 signifies where the pass was made from and 2 is where the pass ended up
