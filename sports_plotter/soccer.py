@@ -29,6 +29,7 @@ class Pitch:
 
 
         self.pass_network_ = False
+        self.pass_positions = False
         self.pitch_col = col
 
 
@@ -44,6 +45,23 @@ class Pitch:
         self.pn_passerids = passerId
         self.pn_recieverids = recieverId
         self.pass_network_ = True
+    def pass_positions(self, xy, passer_id):
+        self.pp_xy
+        self.pp_ids
+
+    def plot_pp(self):
+
+        df = pd.DataFrame(self.pp_xy, columns = ['x','y'])
+        df2 = pd.DataFrame(self.pp_ids, columns=['passId'])
+        df = pd.concat((df, df2), axis=1)
+
+        ids = df['passId'].unique().tolist()
+
+        for id in ids:
+            play_df = df[df['passId'] == id]
+            mean = play_df.values.mean(axis=0)
+            plt.scatter(mean[0], mean[1], c='black')
+
 
     def plot_pn(self):
         df = pd.DataFrame(self.pn_passes, columns=['x1','y1','x2','y2'])
@@ -268,9 +286,8 @@ class Pitch:
             self.plot_pn()
 
         if self.grid:
-            dist = (self.X[1] - self.X[0]) / 10
-            Xs = np.linspace(self.X[0], self.X[1], 10, endpoint=False)
-            Ys = np.linspace(self.Y[0], self.Y[1], 10, endpoint=False)
+            Xs = np.linspace(self.X[0], self.X[1], self.grid[0], endpoint=False)
+            Ys = np.linspace(self.Y[0], self.Y[1],self.grid[1], endpoint=False)
 
             for x in Xs:
                 plt.plot([x,x], [self.Y[0],self.Y[1]], c='black', alpha = 0.6)
