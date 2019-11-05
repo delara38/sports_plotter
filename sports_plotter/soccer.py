@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 class Pitch:
 
-    def __init__(self, x,y, col="white", custom_dim = None, vert= False, half=False):
+    def __init__(self, col="white", custom_dim = None, vert= False, half=False, grid = False):
         self.vert= vert
         self.half = half
         if custom_dim is not None:
@@ -24,6 +24,8 @@ class Pitch:
             self.six_length = 20
             self.six_width = 6
             self.pen_dist = 12
+
+        self.grid = grid
 
 
         self.pass_network_ = False
@@ -265,6 +267,16 @@ class Pitch:
         if self.pass_network_:
             self.plot_pn()
 
+        if self.grid:
+            dist = (self.X[1] - self.X[0]) / 10
+            Xs = np.linspace(self.X[0], self.X[1], 10, endpoint=False)
+            Ys = np.linspace(self.Y[0], self.Y[1], 10, endpoint=False)
+
+            for x in Xs:
+                plt.plot([x,x], [self.Y[0],self.Y[1]], c='black', alpha = 0.6)
+
+            for y in Ys:
+                plt.plot([self.X[0],self.X[1]],[y,y], c = 'black', alpha=0.6)
 
 
 

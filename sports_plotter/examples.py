@@ -16,7 +16,7 @@ plt.show()
 #Create a plot of a soccer pitch and plot a couple passes and makes them blue
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1)
-pitch = Pitch([-120,120],[-80,80])
+pitch = Pitch(grid=True)
 
 
 #create array of pass co-ordinates for pass network in format [x1, y1, x2,y2]
