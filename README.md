@@ -61,7 +61,7 @@ create a soccer field object (Pitch) and plot passes on it. The first pass will 
 ```
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1)
-pitch = Pitch([-120,120],[-80,80])
+pitch = Pitch()
 pitch.add_passes([[6,40,20,5],[-110,-20,-50,60],[-80,-50,80,-40]],col='blue')
 pitch.show_pitch(ax)
 plt.show()
@@ -73,11 +73,19 @@ create a Pitch object call the plot function then after make a contour plot and 
 ```
 fig = plt.Figure()
 ax = fig.add_subplot(1,1,1)
-pitch = Pitch([-120,120],[-80,80], col='green')
+pitch = Pitch( col='green')
 pitch.show_pitch(ax)
 mean, cov = [60, 40], [(80, 0), (0, 80)]
 x, y = np.random.multivariate_normal(mean, cov, size=50).T
 sns.kdeplot(x,y, zorder=1000, shade_lowest=False)
+plt.show()
+```
+create a blank pitch with a 20x10 grid overlay
+```
+fig = plt.Figure()
+ax = fig.add_subplot(1,1,1)
+pitch = Pitch(grid = [20,10])
+pitch.show_pitch(ax)
 plt.show()
 ```
 
