@@ -61,7 +61,7 @@ create a soccer field object (Pitch) and plot passes on it. The first pass will 
 ```
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1)
-pitch = Pitch([-120,120],[-80,80])
+pitch = Pitch()
 pitch.add_passes([[6,40,20,5],[-110,-20,-50,60],[-80,-50,80,-40]],col='blue')
 pitch.show_pitch(ax)
 plt.show()
@@ -73,11 +73,38 @@ create a Pitch object call the plot function then after make a contour plot and 
 ```
 fig = plt.Figure()
 ax = fig.add_subplot(1,1,1)
-pitch = Pitch([-120,120],[-80,80], col='green')
+pitch = Pitch( col='green')
 pitch.show_pitch(ax)
 mean, cov = [60, 40], [(80, 0), (0, 80)]
 x, y = np.random.multivariate_normal(mean, cov, size=50).T
 sns.kdeplot(x,y, zorder=1000, shade_lowest=False)
 plt.show()
 ```
-
+create a blank pitch with a 20x10 grid overlay
+```
+fig = plt.Figure()
+ax = fig.add_subplot(1,1,1)
+pitch = Pitch(grid = [20,10])
+pitch.show_pitch(ax)
+plt.show()
+```
+plot a passing network over a soccer pitch
+```
+fig = plt.figure()
+ax = fig.add_subplot(1,1,1)
+pitch = Pitch()
+#create array of pass co-ordinates for pass network in format [x1, y1, x2,y2]
+#where 1 signifies where the pass was made from and 2 is where the pass ended up
+pass_network = [[20,20,100,70],
+                [60,20, 50 ,80],
+                [20,20,20,60],
+                [40, 60, 20, 20]]
+#array of the id for the passer on each pass in pass_network array
+passer_ids =  [2,1,2,4]
+#array of reciever ids for each reciever in pass_network array
+reciever_ids = [3,3,4,2]
+#send data to pass_network function
+pitch.pass_network(pass_network,passer_ids,reciever_ids)
+pitch.show_pitch(ax)
+plt.show()
+```
