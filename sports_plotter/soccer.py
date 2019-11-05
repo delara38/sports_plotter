@@ -29,7 +29,7 @@ class Pitch:
 
 
         self.pass_network_ = False
-        self.pass_positions = False
+        self.pass_positions_ = False
         self.pitch_col = col
 
 
@@ -45,9 +45,10 @@ class Pitch:
         self.pn_passerids = passerId
         self.pn_recieverids = recieverId
         self.pass_network_ = True
-    def pass_positions(self, xy, passer_id):
-        self.pp_xy
-        self.pp_ids
+    def pass_positions(self, xy, passer_ids):
+        self.pp_xy = xy
+        self.pp_ids = passer_ids
+        self.pass_positions_ = True
 
     def plot_pp(self):
 
@@ -284,6 +285,8 @@ class Pitch:
 
         if self.pass_network_:
             self.plot_pn()
+        if self.pass_positions_:
+            self.plot_pp()
 
         if self.grid:
             Xs = np.linspace(self.X[0], self.X[1], self.grid[0], endpoint=False)
