@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import matplotlib
 from matplotlib.patches import Arc
+import pandas as pd
+import numpy as np
 class Pitch:
 
     def __init__(self, x,y, col="white", custom_dim = None, vert= False, half=False):
@@ -23,7 +25,11 @@ class Pitch:
             self.six_width = 6
             self.pen_dist = 12
 
+
+        self.pass_network_ = False
         self.pitch_col = col
+
+
     def add_passes(self, passes, col = ''):
         self.passes = passes
         self.pass_col = col
@@ -31,7 +37,61 @@ class Pitch:
         self.shots = xy
         self.shots_col = col
         self.shots_size = size
+    def pass_network(self, passes,passerId, recieverId):
+        self.pn_passes = passes
+        self.pn_passerids = passerId
+        self.pn_recieverids = recieverId
+        self.pass_network_ = True
 
+    def plot_pn(self):
+        df = pd.DataFrame(self.pn_passes, columns=['x1','y1','x2','y2'])
+        df2 = pd.DataFrame(self.pn_passerids, columns=['passerId'])
+        df3 = pd.DataFrame(self.pn_recieverids, columns=['recId'])
+        df = pd.concat((df,df2,df3), axis=1)
+
+
+        ids = df['passerId'].unique().tolist()
+        ids2 = df['recId'].unique().tolist()
+        ids = ids + ids2
+        ids = set(ids)
+
+        player_locs = []
+        for id in ids:
+            passing = df[df['passerId']==id]
+            rec = df[df['recId'] == id]
+
+            passing1 = passing[['x1','y1']].values
+            rec1 = rec[['x2','y2']].values
+
+            locs = np.concatenate((passing1,rec1))
+
+            means = locs.mean(axis=0)
+            x_loc = means[0]
+            y_loc = means[1]
+
+            loc = [x_loc, y_loc]
+            player_locs.append(loc)
+        ids = list(ids)
+
+        num_pass = []
+        for pl1_i in range(len(ids)):
+            pl1 = ids[pl1_i]
+            for pl2 in range(pl1_i + 1, len(ids)):
+                pl2 = ids[pl2]
+                df_con = df[((df['passerId'] == pl1) & (df['recId'] == pl2)) | ((df['passerId'] == pl2) & (df['recId'] == pl1))]
+                num_pass.append(len(df_con))
+
+        sum_pass = sum(num_pass)
+        pass_connection = [x / sum_pass for x in num_pass]
+        n = 0
+        for pl1 in range(len(ids)):
+            pl1_locs = player_locs[pl1]
+            for pl2 in range(pl1 + 1, len(ids)):
+                pl2_locs = player_locs[pl2]
+                con = pass_connection[n]
+                plt.scatter([pl1_locs[0],pl2_locs[0]], [pl1_locs[1],pl2_locs[1]], c='black')
+                plt.plot([pl1_locs[0],pl2_locs[0]], [pl1_locs[1],pl2_locs[1]], alpha = con, c = 'black',linewidth = 4.0)
+                n += 1
 
 
     def create_pitch(self, ax):
@@ -200,6 +260,13 @@ class Pitch:
                 pass
 
         ax.set_facecolor(self.pitch_col)
+
+
+        if self.pass_network_:
+            self.plot_pn()
+
+
+
 
     def dim_(self):
         return self.X, self.Y

@@ -9,5 +9,5 @@ setup(name='sports_plotter',
       author_email='natan.de.lara@gmail.com',
       license='MIT',
       packages=['sports_plotter'],
-      install_requires = ['matplotlib'],
+      install_requires = ['matplotlib','numpy','pandas'],
       zip_safe=False)

@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle, Rectangle, Arc
+import numpy as np
 
 class Rink:
 
@@ -10,10 +11,10 @@ class Rink:
         self.vert = vert
 
     def add_shots(self, xy, color = 'black', shape = 'circle', size = 50):
-        self.shots_xy = xy
-        self.shots_color = color
-        self.shot_shape = shape
-        self.shot_size = size
+        self.shots_xy = np.array(xy)
+        self.shots_color1 = color
+        self.shot_shape1 = shape
+        self.shot_size1 = size
 
 
     def make_arena_full(self, ax):
@@ -203,44 +204,8 @@ class Rink:
         else:
             self.make_arena_full(ax)
         try:
-            if isinstance(self.shot_size, (list, tuple, np.ndarray)):
-                if isinstance(self.shots_color, (list, tuple, np.ndarray)):
-                    if isinstance(self.shot_shape, (list, tuple, np.ndarray)):
-                        for i in range(len(self.shots_xy)):
-                            plt.scatter(self.shots_xy[i][0], self.shots_xy[i][1], c = self.shots_color[i],
-                                        marker=self.shot_shape[i], s = self.shot_size[i])
-                    else:
-                        for i in range(len(self.shots_xy)):
-                            plt.scatter(self.shots_xy[i][0], self.shots_xy[i][1], c=self.shots_color[i],
-                                        marker=self.shot_shape, s = self.shot_size[i])
-                else:
-                    if isinstance(self.shot_shape, (list, tuple, np.ndarray)):
-                        for i in range(len(self.shots_xy)):
-                            plt.scatter(self.shots_xy[i][0], self.shots_xy[i][1], c=self.shots_color,
-                                        marker=self.shot_shape[i], s = self.shot_size[i])
-                    else:
-                        for i in range(len(self.shots_xy)):
-                            plt.scatter(self.shots_xy[i][0], self.shots_xy[i][1], c=self.shots_color,
-                                        marker=self.shot_shape, s = self.shot_size[i])
-            else:
-                if isinstance(self.shots_color, (list, tuple, np.ndarray)):
-                    if isinstance(self.shot_shape, (list, tuple, np.ndarray)):
-                        for i in range(len(self.shots_xy)):
-                            plt.scatter(self.shots_xy[i][0], self.shots_xy[i][1], c = self.shots_color[i],
-                                        marker=self.shot_shape[i], s = self.shot_size)
-                    else:
-                        for i in range(len(self.shots_xy)):
-                            plt.scatter(self.shots_xy[i][0], self.shots_xy[i][1], c=self.shots_color[i],
-                                        marker=self.shot_shape, s = self.shot_size)
-                else:
-                    if isinstance(self.shot_shape, (list, tuple, np.ndarray)):
-                        for i in range(len(self.shots_xy)):
-                            plt.scatter(self.shots_xy[i][0], self.shots_xy[i][1], c=self.shots_color,
-                                        marker=self.shot_shape[i], s = self.shot_size)
-                    else:
-                        for i in range(len(self.shots_xy)):
-                            plt.scatter(self.shots_xy[i][0], self.shots_xy[i][1], c=self.shots_color,
-                                        marker=self.shot_shape, s = self.shot_size)
+            plt.scatter(self.shots_xy[:,0], self.shots_xy[:,1], c = self.shots_color1, marker = self.shot_shape1, s = self.shot_size1)
+
         except:
             pass
 
