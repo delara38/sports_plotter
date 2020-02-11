@@ -35,8 +35,8 @@ class Rink:
         ax.plot((0, 0), (-42.5, 42.5), c="red")
 
         #blue lines
-        plt.plot((-25,-25),(-42.5,42.5), c='blue')
-        plt.plot((25, 25), (-42.5, 42.5), c='blue')
+        ax.plot((-25,-25),(-42.5,42.5), c='blue')
+        ax.plot((25, 25), (-42.5, 42.5), c='blue')
 
         #faceoff circles
         ax.add_patch(Circle((-69,22), radius=15, color='red', fill=False))
@@ -104,7 +104,7 @@ class Rink:
         ax.plot((0, 0), (-42.5, 42.5), c="red")
 
         #blue lines
-        plt.plot((25, 25), (-42.5, 42.5), c='blue')
+        ax.plot((25, 25), (-42.5, 42.5), c='blue')
 
         #faceoff circles
         ax.add_patch(Circle((69, 22), radius=15, color='red', fill=False))
@@ -157,7 +157,7 @@ class Rink:
         ax.plot((-42.5, 42.5),(0,0), c="red")
 
         #blue lines
-        plt.plot((-42.5, 42.5),(25, 25), c='blue')
+        ax.plot((-42.5, 42.5),(25, 25), c='blue')
 
         #faceoff circles
         ax.add_patch(Circle(( 22,69), radius=15, color='red', fill=False))
