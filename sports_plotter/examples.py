@@ -4,7 +4,7 @@ import numpy as np
 import seaborn as sns
 from sports_plotter.hockey import Rink
 import pandas as pd
-'''
+
 #Create a plot of a full hockey rink with two red hexagons at (50,0) and (-50,10) representing shots
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1)
@@ -13,6 +13,9 @@ rnk.add_shots([[50, 0],[-50, 10]], shape='H', color=['yellow','red'], size=[50,1
 rnk.plot_rink(ax)
 plt.show()
 '''
+
+
+
 #Create a plot of a soccer pitch and plot a couple passes and makes them blue
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1)
@@ -36,7 +39,7 @@ pitch.show_pitch(ax)
 plt.show()
 
 
-'''
+
 #create a plot of a soccer pitch and plot a contour graph over
 fig = plt.Figure()
 ax = fig.add_subplot(1,1,1)
