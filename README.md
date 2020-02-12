@@ -12,7 +12,7 @@ initialize a Rink object and then show it. Every rink uses NHL API co-ordinates 
 fig = plt.Figure()
 ax = fig.add_subplot(1,1,1)
 rink = Rink()
-rink.plot_rink(ax
+rink.plot_rink(ax)
 ```
 
 initialize a Pitch object and then show it. Every Pitch uses statsbomb dimensions as the default which make (0,0) the bottom left corner and (120,80) the top right corner.
@@ -49,8 +49,7 @@ pitch = Pitch(custom_dim = {'x':[-80,80],
 
 create a Rink object, plot two shots on the ice at (50,0) and (-50,10) coloured red and shaped as a hexagon.
 ```
-fig = plt.figure()
-ax = fig.add_subplot(1,1,1)
+fig, ax = plt.subplots(1,1)
 rnk = Rink()
 rnk.add_shots([[50,0],[-50,10]], shape='H', color='red')
 rnk.plot_rink(ax)
