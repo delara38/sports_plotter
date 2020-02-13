@@ -4,21 +4,21 @@ sports_plotter is a package for making plotting in hockey and soccer easier.
 # Usage
 import
 ```
-from sports_plotter.sports_plotter import Rink, Pitch
+from sports_plotter.hockey import Rink
+from sports_plotter.soccer import Pitch
 ```
 
 initialize a Rink object and then show it. Every rink uses NHL API co-ordinates as default so (0,0) is center ice and the nets are at (-89,0) and (89,0).
 ```
-fig = plt.Figure()
-ax = fig.add_subplot(1,1,1)
+fig, ax = plt.subplots(1,1)
 rink = Rink()
 rink.plot_rink(ax)
 ```
 
+
 initialize a Pitch object and then show it. Every Pitch uses statsbomb dimensions as the default which make (0,0) the bottom left corner and (120,80) the top right corner.
 ```
-fig = plt.Figure()
-ax = fig.add_subplot(1,1,1)
+fig, ax = plt.subplots(1,1)
 pitch = Pitch()
 pitch.show_pitch()
 ```
@@ -58,8 +58,7 @@ plt.show()
 
 create a soccer field object (Pitch) and plot passes on it. The first pass will be from (6,40) to (20,5) and the arrow will be blue.
 ```
-fig = plt.figure()
-ax = fig.add_subplot(1,1,1)
+fig, ax = plt.subplots(1,1)
 pitch = Pitch()
 pitch.add_passes([[6,40,20,5],[-110,-20,-50,60],[-80,-50,80,-40]],col='blue')
 pitch.show_pitch(ax)
@@ -70,8 +69,7 @@ plt.show()
 
 create a Pitch object call the plot function then after make a contour plot and the contour plot will appear over the soccer field.
 ```
-fig = plt.Figure()
-ax = fig.add_subplot(1,1,1)
+fig, ax = plt.subplots(1,1)
 pitch = Pitch( col='green')
 pitch.show_pitch(ax)
 mean, cov = [60, 40], [(80, 0), (0, 80)]
@@ -81,16 +79,14 @@ plt.show()
 ```
 create a blank pitch with a 20x10 grid overlay
 ```
-fig = plt.Figure()
-ax = fig.add_subplot(1,1,1)
+fig, ax = plt.subplots(1,1)
 pitch = Pitch(grid = [20,10])
 pitch.show_pitch(ax)
 plt.show()
 ```
 plot a passing network over a soccer pitch
 ```
-fig = plt.figure()
-ax = fig.add_subplot(1,1,1)
+fig, ax = plt.subplots(1,1)
 pitch = Pitch()
 #create array of pass co-ordinates for pass network in format [x1, y1, x2,y2]
 #where 1 signifies where the pass was made from and 2 is where the pass ended up
@@ -107,3 +103,4 @@ pitch.pass_network(pass_network,passer_ids,reciever_ids)
 pitch.show_pitch(ax)
 plt.show()
 ```
+
