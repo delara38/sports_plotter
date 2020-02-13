@@ -4,8 +4,9 @@ import numpy as np
 import seaborn as sns
 from sports_plotter.hockey import Rink
 import pandas as pd
-
+'''
 #Create a plot of a full hockey rink with two red hexagons at (50,0) and (-50,10) representing shots
+
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1)
 rnk = Rink()
@@ -17,8 +18,7 @@ plt.show()
 
 
 #Create a plot of a soccer pitch and plot a couple passes and makes them blue
-fig = plt.figure()
-ax = fig.add_subplot(1,1,1)
+fig, ax = plt.subplots(1,2)
 #create the pitch object and say it will come with a grid that is 20x20
 pitch = Pitch(grid=[20,20])
 
@@ -35,9 +35,9 @@ passer_ids =  [2,1,2,4]
 reciever_ids = [3,3,4,2]
 #send data to pass_network function
 pitch.pass_network(pass_network,passer_ids,reciever_ids)
-pitch.show_pitch(ax)
+pitch.show_pitch(ax[1])
 plt.show()
-
+'''
 
 
 #create a plot of a soccer pitch and plot a contour graph over

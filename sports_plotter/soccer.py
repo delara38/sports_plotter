@@ -50,7 +50,7 @@ class Pitch:
         self.pp_ids = passer_ids
         self.pass_positions_ = True
 
-    def plot_pp(self):
+    def plot_pp(self, ax):
 
         df = pd.DataFrame(self.pp_xy, columns = ['x','y'])
         df2 = pd.DataFrame(self.pp_ids, columns=['passId'])
@@ -64,7 +64,7 @@ class Pitch:
             ax.scatter(mean[0], mean[1], c='black')
 
 
-    def plot_pn(self):
+    def plot_pn(self, ax):
         df = pd.DataFrame(self.pn_passes, columns=['x1','y1','x2','y2'])
         df2 = pd.DataFrame(self.pn_passerids, columns=['passerId'])
         df3 = pd.DataFrame(self.pn_recieverids, columns=['recId'])
@@ -284,9 +284,9 @@ class Pitch:
 
 
         if self.pass_network_:
-            self.plot_pn()
+            self.plot_pn(ax)
         if self.pass_positions_:
-            self.plot_pp()
+            self.plot_pp(ax)
 
         if self.grid:
             Xs = np.linspace(self.X[0], self.X[1], self.grid[0], endpoint=False)
