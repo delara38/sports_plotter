@@ -1,6 +1,7 @@
 # sports_plotter
 sports_plotter is a package for making plotting in hockey and soccer easier.
-#Installation
+
+# Installation
 ```
 pip install sports-plotter
 ```
