@@ -28,7 +28,7 @@ pitch = Pitch(grid=[20,20])
 pass_network = [[20,20,100,70],
                 [60,20, 50 ,80],
                 [20,20,20,60],
-                [40, 60, 20, 20]]
+                [40, 60, 10, 40]]
 #array of the id for the passer on each pass in pass_network array
 passer_ids =  [2,1,2,4]
 #array of reciever ids for each reciever in pass_network array

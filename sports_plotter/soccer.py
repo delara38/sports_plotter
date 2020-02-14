@@ -103,7 +103,7 @@ class Pitch:
                 num_pass.append(len(df_con))
 
         sum_pass = sum(num_pass)
-        pass_connection = [x / sum_pass for x in num_pass]
+        pass_connection = [np.sqrt(.2 + (x / sum_pass)) for x in num_pass]
         n = 0
         for pl1 in range(len(ids)):
             pl1_locs = player_locs[pl1]
